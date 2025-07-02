@@ -31,14 +31,20 @@ import { saveRollout } from "../../utils/storage/save-rollout.js";
 import { CLI_VERSION } from "../../version.js";
 import ApprovalModeOverlay from "../approval-mode-overlay.js";
 import DiffOverlay from "../diff-overlay.js";
+import PlanOverlay from "../plan-overlay.js";
+import ProgressOverlay from "../progress-overlay.js";
 import HelpOverlay from "../help-overlay.js";
 import HistoryOverlay from "../history-overlay.js";
 import ModelOverlay from "../model-overlay.js";
 import SessionsOverlay from "../sessions-overlay.js";
 import chalk from "chalk";
 import fs from "fs/promises";
-import { Box, Text } from "ink";
+import { Box, Text, useInput } from "ink";
 import { spawn } from "node:child_process";
+import path from "node:path";
+
+// Memory store for chat ingestion
+import { addTriple } from "../../utils/memory-store.js";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { inspect } from "util";
 
@@ -49,7 +55,7 @@ export type OverlayModeType =
   | "model"
   | "approval"
   | "help"
-  | "diff";
+  | "diff" | "plan" | "progress";
 
 type Props = {
   config: AppConfig;
@@ -154,6 +160,53 @@ export default function TerminalChat({
     initialApprovalPolicy,
   );
   const [thinkingSeconds, setThinkingSeconds] = useState(0);
+
+  // ---------------------------------------------------------------------
+  // Plan mode (toggled with "p")
+  // ---------------------------------------------------------------------
+  const [planMode, setPlanMode] = useState<boolean>(false);
+  const [planObjective, setPlanObjective] = useState<string | null>(null);
+
+  // Track which message IDs we have already ingested into memory to avoid
+  // duplicate triples when React re-renders.
+  const ingestedIdsRef = useRef<Set<string>>(new Set());
+
+  // Ingest new chat messages into memory store (user asked / assistant answered)
+  useEffect(() => {
+    for (const item of items) {
+      if (!("id" in item)) continue;
+      const id = (item as { id: string }).id;
+      if (ingestedIdsRef.current.has(id)) continue;
+
+      ingestedIdsRef.current.add(id);
+
+      if (item.type === "message") {
+        if (item.role === "user") {
+          addTriple({ subject: "session", predicate: "asked", object: id });
+        } else if (item.role === "assistant") {
+          addTriple({ subject: "session", predicate: "answered", object: id });
+        }
+      }
+    }
+  }, [items]);
+
+  useInput((input, key) => {
+    if (key.meta || key.ctrl || key.shift) return;
+    if (input === "p") {
+      setPlanMode((prev) => {
+        const newVal = !prev;
+        if (newVal && !planObjective) {
+          setOverlayMode("plan");
+        } else {
+          setOverlayMode("none");
+        }
+        return newVal;
+      });
+    } else if (input === "g") {
+      // toggle progress overlay; if plan mode off open regardless
+      setOverlayMode((m) => (m === "progress" ? "none" : "progress"));
+    }
+  });
 
   const handleCompact = async () => {
     setLoading(true);
@@ -759,6 +812,42 @@ export default function TerminalChat({
             diffText={diffText}
             onExit={() => setOverlayMode("none")}
           />
+        )}
+
+        {overlayMode === "progress" && (
+          <ProgressOverlay
+            plansDir={path.resolve(process.cwd(), "plans")}
+            onExit={() => setOverlayMode("none")}
+          />
+        )}
+
+        {overlayMode === "plan" && (
+          <PlanOverlay
+            onSubmit={(objName) => {
+              setPlanObjective(objName);
+              // spawn codex plan command
+              const child = spawn("node", [
+                path.resolve(__dirname, "../../../bin/codex.js"),
+                "plan",
+                objName,
+              ], { stdio: "inherit" });
+              child.on("close", () => {
+                setOverlayMode("none");
+              });
+            }}
+            onExit={() => {
+              setOverlayMode("none");
+              if (!planObjective) {
+                setPlanMode(false);
+              }
+            }}
+          />
+        )}
+
+        {planMode && overlayMode === "none" && (
+          <Box marginTop={1} justifyContent="center">
+            <Text color="cyanBright">● PLAN MODE ACTIVE – press “p” to toggle</Text>
+          </Box>
         )}
       </Box>
     </Box>

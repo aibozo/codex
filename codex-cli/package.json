@@ -3,7 +3,8 @@
   "version": "0.0.0-dev",
   "license": "Apache-2.0",
   "bin": {
-    "codex": "bin/codex.js"
+    "codex": "bin/codex.js",
+    "codex-repo": "scripts/repo-cli.js"
   },
   "type": "module",
   "engines": {
@@ -20,11 +21,15 @@
     "typecheck": "tsc --noEmit",
     "build": "node build.mjs",
     "build:dev": "NODE_ENV=development node build.mjs --dev && NODE_OPTIONS=--enable-source-maps node dist/cli-dev.js",
-    "stage-release": "./scripts/stage_release.sh"
+    "stage-release": "./scripts/stage_release.sh",
+    "bootstrap": "node scripts/ensure_plans_dir.js",
+    "postinstall": "npm run bootstrap",
+    "validate-plan": "node scripts/validate-plan.js"
   },
   "files": [
     "bin",
-    "dist"
+    "dist",
+    "src/utils"
   ],
   "dependencies": {
     "@inkjs/ui": "^2.0.0",
