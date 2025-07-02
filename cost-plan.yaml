@@ -1,0 +1,5 @@
+objective_id: cost
+tasks:
+  - task_id: echo1
+    executor: patch-bot
+    check_cmd: "echo hi"

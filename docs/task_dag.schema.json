@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://codex.openai.com/schemas/task-dag.schema.json",
+  "title": "Codex Task DAG",
+  "description": "Schema for Objective / Task DAG plans used by Codex CLI.",
+  "type": "object",
+  "required": ["objective_id", "title", "tasks"],
+  "properties": {
+    "objective_id": {
+      "type": "string",
+      "pattern": "^[a-z0-9\\-]+$",
+      "description": "Kebab-case unique identifier."
+    },
+    "title": {
+      "type": "string",
+      "minLength": 3
+    },
+    "tasks": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/task" }
+    }
+  },
+  "definitions": {
+    "task": {
+      "type": "object",
+      "required": ["task_id"],
+      "properties": {
+        "task_id": { "type": "string", "pattern": "^[a-z0-9\\-]+$" },
+        "title": { "type": "string" },
+        "deps": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "check_cmd": { "type": "string" },
+        "status": {
+          "type": "string",
+          "enum": ["todo", "running", "done", "failed"],
+          "default": "todo"
+        }
+      }
+    }
+  }
+}

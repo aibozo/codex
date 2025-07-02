@@ -1,0 +1,9 @@
+name: patch-bot
+role: "Patch-generation worker"
+enabled: true
+model:
+  provider: openai
+  id: o4-mini
+  reasoning: low
+cost_budget_usd: 0.50
+allowed_syscalls: ["shell", "git"]

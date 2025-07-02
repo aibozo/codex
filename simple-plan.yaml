@@ -1,0 +1,4 @@
+objective_id: demo
+tasks:
+  - task_id: echo
+    check_cmd: "echo hi"

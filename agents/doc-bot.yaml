@@ -1,0 +1,8 @@
+name: doc-bot
+role: "Documentation generator"
+enabled: true
+model:
+  provider: openai
+  id: o4-mini
+cost_budget_usd: 0.10
+allowed_syscalls: ["shell"]

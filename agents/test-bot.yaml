@@ -1,0 +1,8 @@
+name: test-bot
+role: "Unit-test runner"
+enabled: true
+model:
+  provider: openai
+  id: o4-mini
+cost_budget_usd: 0.30
+allowed_syscalls: ["shell", "git"]

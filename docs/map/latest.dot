@@ -1,0 +1,56 @@
+digraph codexmap {
+  rankdir=LR;
+  "codex-cli/src/app.tsx" [label="codex-cli/src/app.tsx
+(109 LOC)" shape=box];
+  "codex-cli/src/approvals.ts" [label="codex-cli/src/approvals.ts
+(603 LOC)" shape=box];
+  "codex-cli/src/cli-singlepass.tsx" [label="codex-cli/src/cli-singlepass.tsx
+(29 LOC)" shape=box];
+  "codex-cli/src/cli.tsx" [label="codex-cli/src/cli.tsx
+(772 LOC)" shape=box];
+  "codex-cli/src/commands.ts" [label="codex-cli/src/commands.ts
+(267 LOC)" shape=box];
+  "codex-cli/src/utils/agent/agent-loop.ts" [label="codex-cli/src/utils/agent/agent-loop.ts
+(1675 LOC)" shape=box];
+  "codex-cli/src/utils/agent/review.ts" [label="codex-cli/src/utils/agent/review.ts
+(15 LOC)" shape=box];
+  "codex-cli/src/utils/auto-approval-mode.ts" [label="codex-cli/src/utils/auto-approval-mode.ts
+(11 LOC)" shape=box];
+  "codex-cli/src/utils/check-updates.ts" [label="codex-cli/src/utils/check-updates.ts
+(147 LOC)" shape=box];
+  "codex-cli/src/utils/config.ts" [label="codex-cli/src/utils/config.ts
+(598 LOC)" shape=box];
+  "codex-cli/src/utils/get-api-key.tsx" [label="codex-cli/src/utils/get-api-key.tsx
+(767 LOC)" shape=box];
+  "codex-cli/src/utils/input-utils.ts" [label="codex-cli/src/utils/input-utils.ts
+(40 LOC)" shape=box];
+  "codex-cli/src/utils/logger/log.ts" [label="codex-cli/src/utils/logger/log.ts
+(138 LOC)" shape=box];
+  "codex-cli/src/utils/parsers.ts" [label="codex-cli/src/utils/parsers.ts
+(114 LOC)" shape=box];
+  "codex-cli/src/utils/providers.ts" [label="codex-cli/src/utils/providers.ts
+(56 LOC)" shape=box];
+  "codex-cli/src/utils/terminal.ts" [label="codex-cli/src/utils/terminal.ts
+(85 LOC)" shape=box];
+  "codex-cli/tests/cli-integration.test.ts" [label="codex-cli/tests/cli-integration.test.ts
+(85 LOC)" shape=box];
+  "demo-slug" [label="Objective: demo slug" shape=oval style=filled fillcolor=lightgray];
+  "codex-cli/src/cli.tsx" -> "codex-cli/src/app.tsx";
+  "codex-cli/src/cli.tsx" -> "codex-cli/src/approvals.ts";
+  "codex-cli/src/cli.tsx" -> "codex-cli/src/utils/agent/agent-loop.ts";
+  "codex-cli/src/cli.tsx" -> "codex-cli/src/utils/config.ts";
+  "codex-cli/src/cli.tsx" -> "codex-cli/src/app.tsx";
+  "codex-cli/src/cli.tsx" -> "codex-cli/src/cli-singlepass.tsx";
+  "codex-cli/src/cli.tsx" -> "codex-cli/src/utils/agent/agent-loop.ts";
+  "codex-cli/src/cli.tsx" -> "codex-cli/src/utils/agent/review.ts";
+  "codex-cli/src/cli.tsx" -> "codex-cli/src/utils/auto-approval-mode.ts";
+  "codex-cli/src/cli.tsx" -> "codex-cli/src/utils/check-updates.ts";
+  "codex-cli/src/cli.tsx" -> "codex-cli/src/utils/config.ts";
+  "codex-cli/src/cli.tsx" -> "codex-cli/src/utils/get-api-key.tsx";
+  "codex-cli/src/cli.tsx" -> "codex-cli/src/utils/input-utils.ts";
+  "codex-cli/src/cli.tsx" -> "codex-cli/src/utils/logger/log.ts";
+  "codex-cli/src/cli.tsx" -> "codex-cli/src/utils/parsers.ts";
+  "codex-cli/src/cli.tsx" -> "codex-cli/src/utils/providers.ts";
+  "codex-cli/src/cli.tsx" -> "codex-cli/src/utils/terminal.ts";
+  "codex-cli/src/cli.tsx" -> "codex-cli/src/commands.ts";
+}
