@@ -266,31 +266,13 @@ export async function cliAskCommand(input: string[], flags: any): Promise<number
     console.error('Usage: codex ask [--no-fallback] "your question"');
     return 1;
   }
-  // Find plan path (ignore flags)
-  const planPath = (() => {
-    const p = args[1] && !args[1].startsWith('-') && args[1].endsWith('.yaml') ? args[1] : '';
-    if (p) return p;
-    const rp = process.cwd();
-    const pd = path.join(rp, 'plans');
-    if (!fs.existsSync(pd)) return '';
-    const f = fs
-      .readdirSync(pd)
-      .filter((f) => f.endsWith('.yaml'))
-      .sort()
-      .reverse()[0];
-    return f ? path.join(pd, f) : '';
-  })();
-  const plan = loadPlan(planPath);
-  const symbols = Array.from(iterateNodes());
-  const graph = generateGraph(symbols, plan);
-  // Heuristic answer
-  const resp = answerQuery(graph, query);
-  const heuristicSuccess = !resp.startsWith("I'm sorry") && !resp.startsWith("No symbol matching");
-  if (heuristicSuccess || noFallback) {
+  const planPath = args[1] && !args[1].startsWith('-') && args[1].endsWith('.yaml') ? args[1] : '';
+  try {
+    const resp = await askCommand(query, { noFallback, model: process.env.CODEX_LLM_MODEL || 'gpt-4.1-mini', planPath });
     console.log(resp);
     return 0;
+  } catch (err: any) {
+    console.error('LLM query failed:', err.message);
+    return 1;
   }
-  console.log('No heuristic answer available, falling back to LLM...');
-  console.error('LLM query failed: fallback not available');
-  return 1;
 }

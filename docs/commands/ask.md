@@ -8,9 +8,8 @@ codex ask [--no-fallback] "your question"
 **Description:**
 Answers natural-language questions about your repository's code map.
 
-1. Performs a fast local heuristic lookup (symbols, modules, tasks).
-2. If no answer found and fallback is enabled, sends your question along with a brief
-   map summary to an LLM (default `gpt-4.1-mini`).
+1. Sends your question with a brief map summary to an LLM (default `gpt-4.1-mini`).
+2. If the LLM is disabled or fails, falls back to a fast local heuristic lookup (symbols, modules, tasks).
 
 **Options:**
 - `--no-fallback`  Skip the LLM step and only use heuristics.

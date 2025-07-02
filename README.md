@@ -1,5 +1,5 @@
 | `codex map [plan.yaml]`              | Generate codebase map (docs/map)    | `codex map`                         |
-| `codex ask [--no-fallback] <query>`  | QA over code map (heuristic + LLM)  | `codex ask "Where is Foo?"`       |
+| `codex ask [--no-fallback] <query>`  | QA over code map (LLM + heuristic fallback)  | `codex ask "Where is Foo?"`       |
 <h1 align="center">OpenAI Codex CLI</h1>
 <p align="center">Lightweight coding agent that runs in your terminal</p>
 
