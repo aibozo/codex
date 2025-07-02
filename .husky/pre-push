@@ -1,0 +1,25 @@
+#!/usr/bin/env sh
+# Validate planning files before pushing
+
+pnpm --filter ./codex-cli run validate-plan || {
+  echo "\n❌ Plan validation failed. Fix the issues above or use --no-verify to bypass." >&2
+  exit 1
+}
+
+# Validate agent specs
+node codex-cli/scripts/validate-agent-specs.js || {
+  echo "\n❌ Agent spec validation failed." >&2
+  exit 1
+}
+
+# Existing tests/typecheck can run here if desired (placeholder)
+
+# Block push if any plan YAML contains failed tasks
+if ls plans/*.yaml >/dev/null 2>&1; then
+  if grep -R --quiet -E "status:\s+failed" plans/*.yaml; then
+    echo "\n❌ Push blocked: plan contains failed tasks. Resolve them or use --no-verify." >&2
+    exit 1
+  fi
+fi
+
+exit 0

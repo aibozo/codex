@@ -1,0 +1,7 @@
+#!/usr/bin/env sh
+# Ingest commit metadata into Codex memory store
+
+node codex-cli/scripts/ingest-commit.js
+node codex-cli/scripts/update-repo-state.js
+
+exit 0
