@@ -13,40 +13,37 @@ import { createOpenAIClient } from "./openai-client.js";
  * @returns {Promise<string>} The answer text.
  */
 export async function askCommand(query, opts = {}) {
-  const { noFallback = false, model = 'gpt-4.1-mini' } = opts;
-  // Locate plan in current working directory
-  const planPath = findLatestPlan();
-  // planPath may be empty in tests; loadPlan will be mocked accordingly
+  const { noFallback = false, model = 'gpt-4.1-mini', planPath: overridePlan } = opts;
+  const planPath = overridePlan || findLatestPlan();
   const plan = loadPlan(planPath);
   const symbols = Array.from(iterateNodes());
   const graph = generateGraph(symbols, plan);
-  // Heuristic answer
-  const resp = answerQuery(graph, query);
-  const heuristicSuccess = !resp.startsWith("I'm sorry") && !resp.startsWith("No symbol matching");
-  if (heuristicSuccess || noFallback) {
-    return resp;
+
+  if (!noFallback) {
+    const { getApiKey } = await import('./config.js');
+    if (!getApiKey()) {
+      throw new Error('OpenAI API key not set. Please set OPENAI_API_KEY to enable LLM.');
+    }
+    const summary = graphToMarkdown(graph).split(/\r?\n/).slice(0, 50).join('\n');
+    const openai = createOpenAIClient({ provider: undefined });
+    const messages = [
+      { role: 'system', content: 'You are a helpful assistant that answers questions about the codebase based on the provided map.' },
+      { role: 'assistant', content: summary },
+      { role: 'user', content: query },
+    ];
+    try {
+      const completion = await openai.chat.completions.create({
+        model,
+        messages,
+        temperature: 0.2,
+        max_tokens: 512,
+      });
+      const text = completion.choices?.[0]?.message?.content?.trim();
+      if (text) return text;
+    } catch {}
   }
-  // Fallback: use LLM
-  // Ensure API key is set
-  const { getApiKey } = await import('./config.js');
-  if (!getApiKey()) {
-    throw new Error('OpenAI API key not set. Please set OPENAI_API_KEY to enable LLM fallback.');
-  }
-  const summary = graphToMarkdown(graph).split(/\r?\n/).slice(0, 50).join("\n");
-  const openai = createOpenAIClient({ provider: undefined });
-  const messages = [
-    { role: 'system', content: 'You are a helpful assistant that answers questions about the codebase based on the provided map.' },
-    { role: 'assistant', content: summary },
-    { role: 'user', content: query },
-  ];
-  const completion = await openai.chat.completions.create({
-    model,
-    messages,
-    temperature: 0.2,
-    max_tokens: 512,
-  });
-  const text = completion.choices?.[0]?.message?.content?.trim();
-  return text || '(no response)';
+
+  return answerQuery(graph, query);
 }
 
 // Helper to find latest plan file in current working directory

@@ -1,0 +1,8 @@
+name: qa-agent
+role: "QA agent over code map"
+enabled: true
+model:
+  provider: openai
+  id: o4-mini
+cost_budget_usd: 0.20
+allowed_syscalls: ["shell"]
