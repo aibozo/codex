@@ -28,7 +28,13 @@ else
   VERSION=$(printf '0.0.%d' "$(date +%y%m%d%H%M)")
 fi
 TAG="rust-v$VERSION"
-git checkout -b "$TAG"
+RELEASE_BRANCH="release/$TAG"
+
+# Base release branch off main
+git fetch origin main
+git checkout main
+git pull origin main
+git checkout -b "$RELEASE_BRANCH"
 perl -i -pe "s/^version = \".*\"/version = \"$VERSION\"/" Cargo.toml
 git add Cargo.toml
 git commit -m "Release $VERSION"

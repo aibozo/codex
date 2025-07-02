@@ -55,6 +55,17 @@ import meow from "meow";
 import os from "os";
 import path from "path";
 import React from "react";
+// Import consolidated subcommand handlers
+import {
+  planCommand,
+  contextCommand,
+  runPlanCommand,
+  graphCommand,
+  mapCommand,
+  cliAskCommand,
+  validatePatchCommand,
+  fleetCommand,
+} from "./commands";
 
 // Call this early so `tail -F "$TMPDIR/oai-codex/codex-cli-latest.log"` works
 // immediately. This must be run with DEBUG=1 for logging to work.
@@ -272,6 +283,26 @@ if (cli.flags.config) {
     process.env["EDITOR"] || (process.platform === "win32" ? "notepad" : "vi");
   spawnSync(editor, [filePath], { stdio: "inherit" });
   process.exit(0);
+}
+
+// Short-circuit dedicated subcommands (plan, context, run-plan, graph, map, ask, validate-patch, fleet)
+{
+  const handlers = [
+    planCommand,
+    contextCommand,
+    runPlanCommand,
+    graphCommand,
+    mapCommand,
+    cliAskCommand,
+    validatePatchCommand,
+    fleetCommand,
+  ];
+  for (const handler of handlers) {
+    const exitCode = await handler(cli.input, cli.flags as any);
+    if (exitCode != null) {
+      process.exit(exitCode);
+    }
+  }
 }
 
 // ---------------------------------------------------------------------------

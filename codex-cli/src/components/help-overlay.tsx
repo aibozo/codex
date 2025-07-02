@@ -85,6 +85,12 @@ export default function HelpOverlay({
           <Text color="yellow">Up/Down</Text> – scroll prompt history
         </Text>
         <Text>
+          <Text color="yellow">p</Text> – toggle Plan Mode (create/open objective)
+        </Text>
+        <Text>
+          <Text color="yellow">g</Text> – show plan progress graph
+        </Text>
+        <Text>
           <Text color="yellow">
             Esc<Text dimColor>(✕2)</Text>
           </Text>{" "}

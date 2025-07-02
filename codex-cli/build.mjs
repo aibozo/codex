@@ -83,6 +83,52 @@ esbuild
     minify: !isDevBuild,
     sourcemap: isDevBuild ? "inline" : true,
     plugins,
+    // Provide __filename and __dirname in ESM
+    banner: {
+      js: `import { fileURLToPath } from 'url';
+import path from 'path';
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+`,
+    },
     inject: ["./require-shim.js"],
+  })
+  .then(async () => {
+    // Transpile all utility modules (TS/JS) into dist/utils, preserving directory structure
+    const fs = await import('fs');
+    const path = await import('path');
+    const utilSrc = path.resolve('src', 'utils');
+    const utilOut = path.resolve(OUT_DIR, 'utils');
+    if (fs.existsSync(utilSrc)) {
+      // Recursively collect .ts and .js files (excluding auto-approval-mode.js)
+      function collectFiles(dir) {
+        const files = [];
+        for (const ent of fs.readdirSync(dir, { withFileTypes: true })) {
+          const full = path.join(dir, ent.name);
+          if (ent.isDirectory()) {
+            files.push(...collectFiles(full));
+          } else if (
+            (full.endsWith('.ts') || full.endsWith('.js')) &&
+            !full.endsWith('auto-approval-mode.js')
+          ) {
+            files.push(full);
+          }
+        }
+        return files;
+      }
+      const entries = collectFiles(utilSrc);
+      if (entries.length > 0) {
+        await esbuild.build({
+          entryPoints: entries,
+          outdir: utilOut,
+          outbase: utilSrc,
+          bundle: false,
+          platform: 'node',
+          format: 'esm',
+          sourcemap: isDevBuild ? 'inline' : false,
+          loader: { '.ts': 'ts', '.js': 'js' },
+        });
+      }
+    }
   })
   .catch(() => process.exit(1));
