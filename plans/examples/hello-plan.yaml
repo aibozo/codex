@@ -1,0 +1,16 @@
+objective_id: hello-plan
+title: Demo plan – echo and sleep
+tasks:
+  - task_id: greet
+    title: Print greeting
+    check_cmd: "echo 'Hello, Codex!'"
+
+  - task_id: wait
+    title: Artificial 1-second delay
+    deps: [greet]
+    check_cmd: "sleep 1"
+
+  - task_id: farewell
+    title: Print goodbye
+    deps: [wait]
+    check_cmd: "echo 'Good-bye!'"

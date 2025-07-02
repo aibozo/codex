@@ -1,0 +1,5 @@
+objective_id: a
+tasks:
+  - task_id: t1
+    executor: patch-bot
+    check_cmd: "echo hi"

@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://codex.openai.com/schemas/agent-spec.schema.json",
+  "title": "Codex Agent Specification",
+  "type": "object",
+  "required": ["name", "model"],
+  "properties": {
+    "name": { "type": "string" },
+    "role": { "type": "string" },
+    "enabled": { "type": "boolean", "default": true },
+    "model": {
+      "type": "object",
+      "required": ["id"],
+      "properties": {
+        "provider": { "type": "string", "default": "openai" },
+        "id": { "type": "string" },
+        "reasoning": { "type": "string", "enum": ["low", "medium", "high"] }
+      }
+    },
+    "cost_budget_usd": { "type": "number", "minimum": 0 },
+    "allowed_syscalls": {
+      "type": "array",
+      "items": { "type": "string" }
+    }
+  }
+}

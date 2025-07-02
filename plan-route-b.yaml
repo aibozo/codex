@@ -1,0 +1,5 @@
+objective_id: b
+tasks:
+  - task_id: t1
+    executor: non-existent
+    check_cmd: "echo hi"
